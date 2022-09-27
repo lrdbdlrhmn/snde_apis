@@ -21,7 +21,9 @@ class RegionSeeder extends Seeder
             "name_fr" => "Ilpe Adresse",
             "description" => "Ilpe Adresse",
             "status" => 1,
-            "city_id" => 1
+            "city_id" => 1,
+            "state_id" => 1
+
         ]);
         //
     }
