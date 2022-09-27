@@ -30,7 +30,7 @@ class UsersSeeder extends Seeder
             "password" => Hash::make('1234'),
             "city_id" => 1,
             "state_id" => 1,
-            "region_id" => 1
+            "region_id" => 2
         ]);
 
     }
