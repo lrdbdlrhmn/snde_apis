@@ -1,29 +1,27 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
-$HEADERS = ['Authorization' => 'Basic MDI1ZGIwNjItMWMyNy00ZGU0LWE1YzYtODI4NTA5NDUwZjEw',
-'Content-Type' => 'application/json'];
-$body = ['app_id' => '71cb690b-651b-4c68-a127-f380f516f357'];
+use Illuminate\Support\Facades\Http;
+
 class PushController extends Controller
 {
-    /*
     //
 
     public function send_push()
     {
-        Http::post('https://onesignal.com/api/v1/notifications',
+        Http::withHeaders([
+            'Authorization' => 'Basic MDI1ZGIwNjItMWMyNy00ZGU0LWE1YzYtODI4NTA5NDUwZjEw',
+            'Content-Type' => 'application/json'
+        ])->post('https://onesignal.com/api/v1/notifications',
         [
-            'headers' => $HEADERS,
             'body' => $body,
-            'log_level' => 'debug',
-            'log_format' => 'curl'
 
         ]);
     # code...
     }
-
+/*
     public function new_report($report)
     {
     # code...

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Http\Controllers\API\BaseController as BaseController;
+//use App\Http\Controllers\API\BaseController as BaseController;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Validator;
@@ -51,6 +51,7 @@ class AuthController extends BaseController
      */
     public function login(Request $request)
     {
+        
         if(Auth::attempt(['phone' => $request->phone, 'password' => $request->password])){ 
             $user = Auth::user(); 
             $success['result'] =  $user;
@@ -59,7 +60,7 @@ class AuthController extends BaseController
             return $this->sendResponse($success, __("auth.success"));
         } 
         else{ 
-            return $this->sendError(__("auth.blocked"), ['error'=>'Unauthorised']);
+            return $this->sendError(__("auth.blocked"), ['error'=> $request->all()]);
         } 
     }
     public function logout() {
@@ -68,7 +69,7 @@ class AuthController extends BaseController
         $success['token'] =  $user->createToken('MyApp')->plainTextToken; 
         $success['phone'] =  $user->phone;
         $success['status'] =  'ok';
-        request()->user()->tokens()->delete();
+        $success['result'] = request()->user()->tokens()->delete();
         return $this->sendResponse(
             $success,
             __("auth.logout_success"),
