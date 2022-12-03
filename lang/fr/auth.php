@@ -20,6 +20,7 @@ return [
     "success" => "L'utilisateur s'est authentifié avec succès.",
     "register_success" => "L'utilisateur s'est enregistré avec succès.",
     "register_validation" => "Erreur de  validation.",
+    "delete_success" => "L'utilisateur s'est supprimé avec succès.",
 
     /** Logout */
     "logout_success" => "L'utilisateur s'est déconnecté avec succès.",

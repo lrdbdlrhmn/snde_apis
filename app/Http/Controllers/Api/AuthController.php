@@ -26,8 +26,7 @@ class AuthController extends BaseController
             'nni' => 'required',
             'password' => 'required',
             'email' => 'required|email',
-            'password' => 'required',
-            'c_password' => 'required|same:password'
+            //'c_password' => 'required|same:password'
         ]);
    
         if($validator->fails()){
@@ -37,8 +36,8 @@ class AuthController extends BaseController
         $input = $request->all();
         $input['password'] = bcrypt($input['password']);
         $user = User::create($input);
-        $success['token'] =  $user->createToken('MyApp')->plainTextToken;
-        $success['phone'] =  $user->phone;
+        $success['headers'] =  ['authorization' => $user->createToken('MyApp')->plainTextToken];
+        $success['result'] =  $user;
         $success['status'] =  'ok';
    
         return $this->sendResponse($success, __("auth.register_success"));
@@ -75,4 +74,19 @@ class AuthController extends BaseController
             __("auth.logout_success"),
         );
     }
+    public function delete()
+    {
+        $user = User::find(Auth::user()->id);
+        Auth::logout();
+        if ($user->delete()) {
+            # code...
+            return $this->sendResponse(
+                $success,
+                __("auth.delete_success"),
+            );
+        }
+        # code...
+    }
+
+    
 }

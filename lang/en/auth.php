@@ -20,7 +20,7 @@ return [
     "failed" => "Invalid email or password.",
     "success" => "User authenticated successfully.",
     "throttle" => "Too many login attempts. Please try again in :seconds seconds.",
-
+    "delete_success" => "User deleted successfully.",
     /** Logout */
     "logout_success" => "User logged out successfully.",
 

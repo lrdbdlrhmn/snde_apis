@@ -2,41 +2,43 @@
 
 namespace App\Http\Controllers\Api;
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use GuzzleHttp\Client;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 
-class PushController extends Controller
+class PushController
 {
     //
+    public function send_push($body = [
+        'app_id' => '71cb690b-651b-4c68-a127-f380f516f357'
 
-    public function send_push()
+    ])
     {
+        
         Http::withHeaders([
             'Authorization' => 'Basic MDI1ZGIwNjItMWMyNy00ZGU0LWE1YzYtODI4NTA5NDUwZjEw',
             'Content-Type' => 'application/json'
         ])->post('https://onesignal.com/api/v1/notifications',
-        [
-            'body' => $body,
-
-        ]);
+            $body
+        );
     # code...
     }
-/*
     public function new_report($report)
     {
     # code...
-    $manager_ids = ManagersRegion::where('region_id', $report.['region_id']).pluck('manager_id');
-    //$notification_ids = User::where("users.region_id = #{$report['region_id'] #{manager_ids.size > 0 ? "OR users.id IN (#{manager_ids.join(',')})" : ""}").where.not(notification_id: [nil, '', 'NULL']).limit(10).pluck(:notification_id).uniq
-    $body['include_player_ids'] = [$notification_ids];
-    $body['data'] = ['type' => 'new_report','id' => $report['id']];
+        $manager_ids = ManagersRegion::where('region_id', $report.['region_id']).pluck('manager_id');
+        //$notification_ids = User::where("users.region_id = ".$report['region_id'] manager_ids.size > 0 ? "OR users.id IN (#{manager_ids.join(',')})" : ""}").where.not(notification_id: [nil, '', 'NULL']).limit(10).pluck(:notification_id).uniq
+        $body['include_player_ids'] = $notification_ids;
+        $body['data'] = ['type' => 'new_report','id' => $report['id']];
+        $body['headings'] = ['en' => 'بلاغ جديد' ];
+        $body['app_id'] ='71cb690b-651b-4c68-a127-f380f516f357';
+        $body['contents'] = ['en' => 'تم الابلاغ عن مشكلة فى منطقتك' ];
+        $push_body = json_encode($body);
+        $this->send_push($push_body);
+    }
 
-    $body['headings'] = ['en' => 'بلاغ جديد' ];
-    $body['contents'] = ['en' => 'تم الابلاغ عن مشكلة فى منطقتك' ];
-    $push_body = json_encode($body);
-    $this->send_push($push_body);
-}
-
-    public function to_one($player_id,$title,$body,$type='notify_one')
+    public function to_one($player_id,$title='',$body = '',$type='notify_one')
     {
         if (isset($player_id) || isset($body)) {
             # code...
@@ -52,5 +54,5 @@ class PushController extends Controller
     # code...
         
     }
-    */
+    
 }

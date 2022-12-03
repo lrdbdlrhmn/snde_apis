@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use PDF;
 class ImageController extends BaseController
 {
   /*
@@ -17,7 +16,6 @@ class ImageController extends BaseController
 */
   public function check_balance($id)
   {
-  # code...
         $invoice_ref = $id;
         if (!isset($invoice_ref)) {
             # code...
@@ -30,20 +28,14 @@ class ImageController extends BaseController
             # code...
             return $this->sendError('not_found','error');
         }
-        $nom = $user['nom'];
-        $abnAdresse = $user['abnAdresse'];
-        $solde = $user['solde'];
         return [
           'result' => [
             'status' => 'ok',
-            'user' => [
-              'name' => $nom,
-              'balance' => $solde
-            ]
+            'user' => $user
           ]
         ];
   }
-/*
+
   public function invoiceHtml($id)
   {
   # code...
@@ -62,20 +54,20 @@ class ImageController extends BaseController
       if (!isset($header_with_details)) {
         # code...
       }
-      //return $header_with_details;
-      $html = view('invoices.show',  [
+      $html = view('invoices.show',[
         'header_with_details' => $header_with_details,
         'user' => $user,
         'invoice_ref' => $invoice_ref
-        ]);
+      ]);
       return $html;
-  }
+    }
+  /*
   public function invoice($invoice_ref)
   {
     //$pdf = Browsershot::url('http://127.0.0.1:8000/invoiceHtml/'.$invoice_ref)->format('A4');
 
   }
-/*
+
   public function show(Request $request)
   {
     $report = Report::find($request->id);

@@ -71,39 +71,39 @@ class User extends Authenticatable
     ];
 
   public function technical(){
-        return 'technical';
+        return 'technical' == $user_typ;
   }
   public function manager_user(){
-    return 'manager';
+    return 'manager' == $user_type;
 }
 public function user(){
-    return 'user';
+    return 'user' == $user_type;
 }
-/*
-  public function manager()
-  {
-    if ($this->technical()) {
+
+public function manager()
+{
+    if (!$this->technical()) {
         # code...
         return;
     }
-    User::where('id','technical');
+    return User::where('id','technical');
       # code...
-  }
-  */
+}
+  
   public function technicals()
   {
-      User::where('user_type','technical')->where('manager_id',$id);
+      return User::where('user_type','technical')->where('manager_id',$id);
       # code...
   }
 
     public function manager_reports()
     {
-        Report::where('manager_id',$id);
+        return Report::where('manager_id',$id);
         # code...
     }
     public function technical_reports()
     {
-        Report::where('technical_id',$id);
+        return Report::where('technical_id',$id);
         # code...
     }
 

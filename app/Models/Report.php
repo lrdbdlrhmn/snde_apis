@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property $city_id
  * @property $state_id
  * @property $user_id
+ * @property $image
  * @property $created_at
  * @property $updated_at
  *
@@ -39,6 +40,7 @@ class Report extends Model
 		'city_id' => 'required',
 		'state_id' => 'required',
 		'user_id' => 'required',
+        'image' => 'required',
     ];
 
     protected $perPage = 20;
@@ -48,7 +50,7 @@ class Report extends Model
      *
      * @var array
      */
-    protected $fillable = ['report_type','latlng','description','status','manager_id','technical_id','city_id','state_id','user_id'];
+    protected $fillable = ['report_type','image','latlng','description','status','manager_id','technical_id','city_id','state_id','user_id'];
 
 
     /**

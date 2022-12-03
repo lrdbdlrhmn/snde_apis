@@ -4,132 +4,106 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-
+use App;
+use App\Models\Report;
+use Illuminate\Support\Facades\DB;
 class ApplicationController extends Controller
 {
-    /*
-    public function all_reports($is_notifications = true)
+
+    public function all_reports($is_notifications = false,$request,$current_user)
     {
-        $l_name = I18n.locale == 'ar' ? 'name' : 'name_fr';
-        $report_select = "reports.*, users.first_name, users.phone, states.#{l_name} as state_name, cities.#{l_name} as city_name, regions.#{l_name} as region_name";
+        $req = $request->all();
         
-        if ($is_notifications) {
+        $appLanguage = App::getLocale();
+        
+        $l_name = $appLanguage == 'ar' ? 'name' : 'name_fr';
+        //$report_select = "reports.*, users.first_name, users.phone, states.#{l_name} as state_name, cities.#{l_name} as city_name, regions.#{l_name} as region_name";
+        
+        if (!$is_notifications) {
             # code...
-            if ($current_user['type_user'] == 'manager') {
+            if ($current_user['user_type'] == 'manager') {
                 # code...
                 $reports = Report::where('manager_id',$current_user->id);
             }
-            elseif ($current_user['type_user'] == 'technical') {
+            elseif ($current_user['user_type'] == 'technical') {
                 # code...
                 $reports = Report::where('technical_id', $current_user->id);
             }else{
                 $reports = Report::where('user_id', $current_user->id);
 
             }
-            $reports = reports_filtering($reports);
-            return $reports.select("#{report_select},  technicals_reports.first_name as technical_name").left_joins('states').left_joins('regions').left_joins('cities').left_joins('users').left_joins('technical').order_by_score(params['order_by']).limit(70);
+            $reports = $this->reports_filtering($req,$reports);
+        
+            $reports = $reports->select('reports.*','states.name as state_name','cities.name as city_name','regions.name as region_name')->where('reports.user_id',$current_user->id)->get();
+            //$reports = $this->order_by_score($reports,$req['order_by']);
+            //$reports = $reports->limit(70);
+            return $reports;
         }
+        
 
-        if (condition) {
+        if ($current_user['user_type'] == 'user') {
             # code...
-            return [];
+          return [];
         }
+        $reports = Report::orderBy('reports.created_at', $req['order_by']);
+        if ($current_user['user_type'] == 'manager') {
 
-        if (condition) {
-
-            $reports = Report::select($report_select);
-            # code...
-        }else{
-            $current_user->technical_reports.select($report_select);
         }
-    # code...
-    
-    $reports = $reports->left_joins('states').left_joins('regions').left_joins('cities').left_joins('users');
-    $reports = reports_filtering($reports);
-    if ($current_user->technical()) {
-        # code...
-        return $reports.where('status', 'technical').order_by_score($params['order_by']).limit(70);
-    }
-   
+        if ($current_user['user_type'] == 'technical') {
+          $reports =  $reports->where('reports.status', 'technical');
+        }
+        $reports = $this->reports_filtering($req,$reports);
+        $reports = $reports->select('reports.*','states.name as state_name','cities.name as city_name','regions.name as region_name')->get();
+        //
+        return $reports;
 
-    $region_ids = $current_user->regions.pluck('region_id') + [$current_user->region_id];
-    $reports.where('region_id',$region_ids)->where('status', 'new').order_by_score($params['order_by']).limit(70);
+    //$region_ids = $current_user->regions.pluck('region_id') + [$current_user->region_id];
+    //$reports.where('region_id',$region_ids)->where('status', 'new').order_by_score($params['order_by']).limit(70);
     }
     //
-    public function language_report_types()
+    public function reports_filtering($request,$reports)
     {
-        $this->report_types[I18n.locale];
-    }
-    /*public function report_types()
-    {
-    # code...
-            [
-                'ar' => [
-                'reason1' => 'انقطاع او نقص فى المياه',
-                'reason2' => 'تسرب فى انابيب المياه',
-                'reason3' => 'عدم استلام الفاتورة',
-                'reason4' => 'خطأ فى قيمة الفاتورة (المطالبة بالتأكد)',
-                'reason5' => 'ابلاغ عن عملية احتيال',
-                'reason6' => 'أخرى'
-                ],
-                'fr'=> [
-                'reason1' => "Manque d'eau",
-                'reason2' => "Fuite d'eau",
-                'reason3' => 'Facture non distribuée',
-                'reason4' => 'Erreur de relevé (réclamation sur la fact)',
-                'reason5' => 'Fraude signalée',
-                'reason6' => 'Autre'
-                ],
-                'en' => [
-                'reason1' => 'Lack of water',
-                'reason2' => 'Water leak',
-                'reason3' => 'Invoice not distributed',
-                'reason4' => 'Invoice value is not correct (claim on the fact)',
-                'reason5' => 'Fraud reported',
-                'reason6' => 'Other'
-                ]
-            ]
-    }
-    
-    public function reports_filtering($reports)
-    {
-
-        if ($params['start_date']) {
+        $reports = $reports->join('cities','reports.city_id','cities.id')->join('states','reports.state_id','states.id')->join('regions','reports.region_id','regions.id');
+        if (isset($request['start_date'])) {
             # code...
-            $reports = $reports.where('reports.start_date', $params['start_date']);
+            $from = $request['start_date']."T00:00:00.000000Z";
+            //$from = date_timestamp_get($from);
+            $reports = $reports->where('reports.created_at','>=',$from);
         }
-        if ($params['end_date']) {
+        if (isset( $request['end_date'])) {
             # code...
-            $reports = $reports.where('reports.end_date', $params['end_date']);
-        }
-        if ($params['status']) {
-            # code...
-            $reports = $reports.where('reports.status', $params['status']);
+            $to = $request['end_date']."T00:00:00.000000Z";
+            //$to = date_timestamp_get($to);
+            $reports = $reports->where('reports.created_at','<=', $to);
         }
 
-        if ($params['region_id']) {
+        if (isset($request['region_id'])) {
             # code...
-            $reports = $reports.where('reports.region_id', $params['region_id']);
+            $reports = $reports->where('reports.region_id', $request['region_id']);
         }
 
-        if ($params['city_id']) {
+        if (isset($request['city_id'])) {
             # code...
-            $reports = $reports.where('reports.city_id', $params['city_id']);
+            $reports = $reports->where('reports.city_id', $request['city_id']);
         }
 
-        if ($params['state_id']) {
+        if (isset($request['state_id'])) {
             # code...
-            $reports = $reports.where('reports.state_id', $params['state_id']);
+            $reports = $reports->where('reports.state_id', $request['state_id']);
         }
 
         return $reports;
     # code...
     }
+    /*
     public function manager_only()
     {
-        if ($current_user->manager()) {
+        $current_user = Auth::user();
+        if ($current_user['type_user'] == 'manager') {
             # code...
-            $this->sendError('manager_only','error');
+            return ['status' => 'error',
+                    'message' => 'manager_only'
+                ];
         }
     # code...
     }

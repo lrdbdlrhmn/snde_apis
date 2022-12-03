@@ -21,7 +21,7 @@ return [
     "failed" => "Invalid email or password.",
     "success" => "لقد تمت العملية بنجاح",
     "throttle" => "Too many login attempts. Please try again in :seconds seconds.",
-
+    "delete_success" => "لقد تمت العملية بنجاح",
     /** Logout */
     "logout_success" => "User logged out successfully.",
 ];
